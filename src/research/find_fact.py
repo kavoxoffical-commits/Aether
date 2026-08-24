@@ -1,12 +1,12 @@
 """
-Research + Verification module.
+Research + Verification module (Gemini edition — free tier).
 
-Uses the Anthropic API (with web_search tool) to:
+Uses the Gemini API (with Google Search grounding) to:
 1. Discover a candidate "weird fact" in one of the project's categories.
-2. Cross-check it against sources before accepting it as verified.
+2. Cross-check it against real sources before accepting it as verified.
 3. Reject duplicates by checking data/tracking/facts.json.
 
-Requires env var: ANTHROPIC_API_KEY
+Requires env var: GEMINI_API_KEY
 
 Output: appends a verified fact object to data/tracking/facts.json
 {
@@ -15,7 +15,7 @@ Output: appends a verified fact object to data/tracking/facts.json
   "category": "...",
   "fact": "...",
   "sources": ["..."],
-  "verification_status": "verified" | "unverified" | "rejected",
+  "verification_status": "verified" | "needs_review",
   "script_status": "pending",
   "audio_status": "pending",
   "visual_status": "pending",
@@ -30,14 +30,16 @@ import json
 import os
 import re
 import sys
-import uuid
+import urllib.request
+import urllib.error
 from datetime import datetime, timezone
 from pathlib import Path
 
-import anthropic
-
 ROOT = Path(__file__).resolve().parents[2]
 TRACKING_FILE = ROOT / "data" / "tracking" / "facts.json"
+
+GEMINI_MODEL = "gemini-2.0-flash"
+GEMINI_URL = f"https://generativelanguage.googleapis.com/v1beta/models/{GEMINI_MODEL}:generateContent"
 
 CATEGORIES = [
     "Weird Facts", "Strange Facts", "Science", "Animals", "Human Body",
@@ -51,7 +53,7 @@ Find ONE surprising, verifiable, "I didn't know that!" fact in the category: {ca
 
 Rules:
 - It must be genuinely surprising, not a commonly-known fact.
-- It must be checkable against real sources (use web search).
+- It must be checkable against real sources (use Google Search grounding).
 - Do NOT invent or embellish anything.
 - Avoid these already-used facts (do not repeat or lightly rephrase them):
 {used_facts}
@@ -91,30 +93,44 @@ def extract_json(text: str) -> dict:
     return json.loads(text)
 
 
-def find_and_verify_fact(category: str | None = None) -> dict | None:
-    client = anthropic.Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
+def call_gemini(prompt: str) -> str:
+    api_key = os.environ["GEMINI_API_KEY"]
+    body = {
+        "contents": [{"parts": [{"text": prompt}]}],
+        "tools": [{"google_search": {}}],
+    }
+    req = urllib.request.Request(
+        GEMINI_URL,
+        data=json.dumps(body).encode("utf-8"),
+        method="POST",
+    )
+    req.add_header("x-goog-api-key", api_key)
+    req.add_header("Content-Type", "application/json")
 
+    with urllib.request.urlopen(req, timeout=60) as resp:
+        result = json.loads(resp.read().decode("utf-8"))
+
+    parts = result["candidates"][0]["content"]["parts"]
+    return "".join(p.get("text", "") for p in parts)
+
+
+def find_and_verify_fact(category: str | None = None) -> dict | None:
     records = load_tracking()
     used_facts = "\n".join(f"- {r['fact']}" for r in records) or "(none yet)"
     category = category or CATEGORIES[len(records) % len(CATEGORIES)]
 
-    response = client.messages.create(
-        model="claude-sonnet-4-6",
-        max_tokens=1000,
-        tools=[{"type": "web_search_20250305", "name": "web_search"}],
-        messages=[{
-            "role": "user",
-            "content": RESEARCH_PROMPT.format(category=category, used_facts=used_facts),
-        }],
-    )
+    prompt = RESEARCH_PROMPT.format(category=category, used_facts=used_facts)
 
-    text_blocks = [b.text for b in response.content if b.type == "text"]
-    if not text_blocks:
+    try:
+        raw_text = call_gemini(prompt)
+    except urllib.error.HTTPError as e:
+        print(f"Gemini API error: {e.code} {e.read().decode()}", file=sys.stderr)
         return None
 
     try:
-        parsed = extract_json(text_blocks[-1])
+        parsed = extract_json(raw_text)
     except (json.JSONDecodeError, IndexError):
+        print(f"Could not parse Gemini response as JSON:\n{raw_text}", file=sys.stderr)
         return None
 
     if parsed.get("confidence") == "low":
