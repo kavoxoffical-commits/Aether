@@ -1,0 +1,29 @@
+name: Research Fact
+
+on:
+  workflow_dispatch: {}
+  # Scheduled runs will be added once the full pipeline (script/voice/visuals/render/upload)
+  # is built and tested end-to-end — no point discovering facts faster than we can use them.
+
+jobs:
+  find-fact:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Run research module
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: python src/research/find_fact.py
+
+      - name: Commit updated tracking file
+        run: |
+          git config user.name "aether-bot"
+          git config user.email "aether-bot@users.noreply.github.com"
+          git add data/tracking/facts.json
+          git diff --cached --quiet || git commit -m "Add new researched fact"
+          git push
