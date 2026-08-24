@@ -90,15 +90,24 @@ def next_fact_id(records):
 def extract_json(text: str) -> dict:
     text = text.strip()
     text = re.sub(r"^```json\s*|\s*```$", "", text, flags=re.MULTILINE)
-    return json.loads(text)
+    try:
+        return json.loads(text)
+    except json.JSONDecodeError:
+        start = text.find("{")
+        end = text.rfind("}")
+        if start != -1 and end != -1 and end > start:
+            return json.loads(text[start:end + 1])
+        raise
 
 
 def call_gemini(prompt: str) -> str:
     api_key = os.environ["GEMINI_API_KEY"]
     body = {
         "contents": [{"parts": [{"text": prompt}]}],
-        # Grounding tool temporarily disabled while diagnosing a 429 quota issue
-        # tied to google_search grounding on this project.
+        "tools": [{"google_search": {}}],
+        "generationConfig": {
+            "response_mime_type": "application/json",
+        },
     }
     req = urllib.request.Request(
         GEMINI_URL,
@@ -131,7 +140,7 @@ def find_and_verify_fact(category: str | None = None) -> dict | None:
     try:
         parsed = extract_json(raw_text)
     except (json.JSONDecodeError, IndexError):
-        print(f"Could not parse Gemini response as JSON:\n{raw_text}", file=sys.stderr)
+        print(f"Could not parse Gemini response as JSON. Raw response was:\n---\n{raw_text}\n---", file=sys.stderr)
         return None
 
     if parsed.get("confidence") == "low":
