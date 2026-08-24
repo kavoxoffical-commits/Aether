@@ -97,7 +97,8 @@ def call_gemini(prompt: str) -> str:
     api_key = os.environ["GEMINI_API_KEY"]
     body = {
         "contents": [{"parts": [{"text": prompt}]}],
-        "tools": [{"google_search": {}}],
+        # Grounding tool temporarily disabled while diagnosing a 429 quota issue
+        # tied to google_search grounding on this project.
     }
     req = urllib.request.Request(
         GEMINI_URL,
