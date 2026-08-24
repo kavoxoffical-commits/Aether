@@ -1,1 +1,2 @@
-anthropic>=0.40.0
+# No external dependencies for the research module (uses stdlib urllib).
+# Dependencies will be added here as later pipeline stages (voice, visuals, render) are built.
