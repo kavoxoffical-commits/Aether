@@ -104,7 +104,12 @@ def call_gemini(prompt: str) -> str:
     api_key = os.environ["GEMINI_API_KEY"]
     body = {
         "contents": [{"parts": [{"text": prompt}]}],
-        "tools": [{"google_search": {}}],
+        # NOTE: Google Search grounding requires a billing-enabled project even
+        # within otherwise-free quota, so it's intentionally NOT used here
+        # (project rule: zero paid services). The model answers from its own
+        # knowledge instead; low-confidence facts are discarded below, and
+        # nothing is accepted as "verified" without the model itself judging
+        # it confidently true.
         "generationConfig": {
             "response_mime_type": "application/json",
         },
