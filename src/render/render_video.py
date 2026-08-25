@@ -104,20 +104,29 @@ def render_video(fact: dict, out_path: Path):
 
         # Ken Burns: slow zoom-in over the beat's duration so nothing sits
         # frozen. Oversized scale first so the zoompan crop has room to move.
-        base = (
-            f"[{i}:v]scale={TARGET_W * 2}:{TARGET_H * 2}:force_original_aspect_ratio=increase,"
-            f"crop={TARGET_W * 2}:{TARGET_H * 2}"
-        )
         if beat["type"] == "video":
-            base += f",trim=duration={per_beat_duration:.3f},setpts=PTS-STARTPTS,fps={ZOOM_FPS}"
+            # Real video footage already has motion — just scale/crop/trim,
+            # no zoompan (zoompan is for static images; applying it to a
+            # multi-frame video multiplies frames catastrophically and hangs).
+            base = (
+                f"[{i}:v]scale={TARGET_W}:{TARGET_H}:force_original_aspect_ratio=increase,"
+                f"crop={TARGET_W}:{TARGET_H},trim=duration={per_beat_duration:.3f},"
+                f"setpts=PTS-STARTPTS,fps={ZOOM_FPS}"
+            )
+            filter_parts.append(f"{base}[v{i}]")
         else:
-            base += f",loop=loop=-1:size=1,trim=duration={per_beat_duration:.3f},setpts=PTS-STARTPTS,fps={ZOOM_FPS}"
-
-        zoom = (
-            f",zoompan=z='min(zoom+0.0012,1.15)':d={max(n_frames,1)}:"
-            f"x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':s={TARGET_W}x{TARGET_H}:fps={ZOOM_FPS}"
-        )
-        filter_parts.append(f"{base}{zoom}[v{i}]")
+            # Static photo: this is exactly what zoompan is for — a slow
+            # Ken Burns zoom so it doesn't look like a frozen slide.
+            base = (
+                f"[{i}:v]scale={TARGET_W * 2}:{TARGET_H * 2}:force_original_aspect_ratio=increase,"
+                f"crop={TARGET_W * 2}:{TARGET_H * 2},loop=loop=-1:size=1,"
+                f"trim=duration={per_beat_duration:.3f},setpts=PTS-STARTPTS,fps={ZOOM_FPS}"
+            )
+            zoom = (
+                f",zoompan=z='min(zoom+0.0012,1.15)':d={max(n_frames,1)}:"
+                f"x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':s={TARGET_W}x{TARGET_H}:fps={ZOOM_FPS}"
+            )
+            filter_parts.append(f"{base}{zoom}[v{i}]")
 
     concat_inputs = "".join(f"[v{i}]" for i in range(len(beats)))
     filter_parts.append(f"{concat_inputs}concat=n={len(beats)}:v=1:a=0[vraw]")
