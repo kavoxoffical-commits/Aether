@@ -32,7 +32,6 @@ jobs:
         run: |
           git config user.name "aether-bot"
           git config user.email "aether-bot@users.noreply.github.com"
-          git lfs track "data/render/*.mp4" 2>/dev/null || true
           git add data/tracking/facts.json data/render/
           git diff --cached --quiet || git commit -m "Render final video for pending fact"
           git push
