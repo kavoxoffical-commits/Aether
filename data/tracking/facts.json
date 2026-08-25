@@ -12,7 +12,7 @@
     "script_status": "done",
     "audio_status": "done",
     "visual_status": "done",
-    "render_status": "pending",
+    "render_status": "done",
     "upload_status": "pending",
     "youtube_url": null,
     "published_date": null,
@@ -47,6 +47,7 @@
         "type": "video",
         "path": "data/visuals/fact_0001/beat_4.mp4"
       }
-    ]
+    ],
+    "render_path": "data/render/fact_0001.mp4"
   }
 ]

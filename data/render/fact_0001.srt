@@ -1,51 +1,111 @@
 1
-00:00:00,000 --> 00:00:01,748
-A pigeon might actually understand
+00:00:00,000 --> 00:00:01,430
+Your local park pigeons
 
 2
-00:00:01,748 --> 00:00:03,497
-high art better than you
+00:00:01,430 --> 00:00:02,859
+aren't just begging for
 
 3
-00:00:03,497 --> 00:00:05,245
-do. Back in 1995, researchers
+00:00:02,859 --> 00:00:04,289
+breadcrumbs—they might actually have
 
 4
-00:00:05,245 --> 00:00:06,993
-successfully trained pigeons to tell
+00:00:04,289 --> 00:00:05,719
+a better grasp of
 
 5
-00:00:06,993 --> 00:00:08,742
-the difference between paintings by
+00:00:05,719 --> 00:00:07,149
+fine art than you
 
 6
-00:00:08,742 --> 00:00:10,490
-Claude Monet and Pablo Picasso.
+00:00:07,149 --> 00:00:08,578
+do. In a 1995
 
 7
-00:00:10,490 --> 00:00:12,238
-The birds pulled it off
+00:00:08,578 --> 00:00:10,008
+study, researchers put this
 
 8
-00:00:12,238 --> 00:00:13,986
-with over ninety percent accuracy.
+00:00:10,008 --> 00:00:11,438
+to the test by
 
 9
-00:00:13,986 --> 00:00:15,735
-They could even correctly categorize
+00:00:11,438 --> 00:00:12,867
+training pigeons to distinguish
 
 10
-00:00:15,735 --> 00:00:17,483
-Impressionist and Cubist styles they
+00:00:12,867 --> 00:00:14,297
+between paintings by Claude
 
 11
-00:00:17,483 --> 00:00:19,231
-had never seen before. Honestly,
+00:00:14,297 --> 00:00:15,727
+Monet and Pablo Picasso.
 
 12
-00:00:19,231 --> 00:00:20,980
-city birds might have better
+00:00:15,727 --> 00:00:17,157
+The results were mind-blowing.
 
 13
-00:00:20,980 --> 00:00:22,728
-taste than most of us.
+00:00:17,157 --> 00:00:18,586
+The birds didn't just
+
+14
+00:00:18,586 --> 00:00:20,016
+randomly guess—they identified the
+
+15
+00:00:20,016 --> 00:00:21,446
+correct artist with over
+
+16
+00:00:21,446 --> 00:00:22,875
+ninety percent accuracy! But
+
+17
+00:00:22,875 --> 00:00:24,305
+wait, it gets even
+
+18
+00:00:24,305 --> 00:00:25,735
+weirder. When shown totally
+
+19
+00:00:25,735 --> 00:00:27,165
+new Impressionist and Cubist
+
+20
+00:00:27,165 --> 00:00:28,594
+paintings they had never
+
+21
+00:00:28,594 --> 00:00:30,024
+seen before, the pigeons
+
+22
+00:00:30,024 --> 00:00:31,454
+still correctly categorized the
+
+23
+00:00:31,454 --> 00:00:32,883
+styles instantly. So while
+
+24
+00:00:32,883 --> 00:00:34,313
+you're standing in a
+
+25
+00:00:34,313 --> 00:00:35,743
+museum trying to look
+
+26
+00:00:35,743 --> 00:00:37,173
+intellectual, just remember a
+
+27
+00:00:37,173 --> 00:00:38,602
+literal pigeon already gets
+
+28
+00:00:38,602 --> 00:00:40,032
+the joke.
