@@ -39,11 +39,11 @@ FACT TO USE:
 {fact}
 
 STRICT RULES:
-- Total spoken length: 20-40 seconds when read aloud at a natural, energetic pace (~45-70 words).
+- Total spoken length: 28-38 seconds when read aloud at a natural, energetic pace (~85-115 words). Do not undershoot — a 15-second script is a FAILURE for this format.
 - The hook (first 1-2 seconds / first sentence) must grab attention immediately. NO intro, no "Hey guys", no logo/channel mention, no "Did you know...?" (banned — overused).
 - Do NOT reuse any of these recent hook styles/openings (write something structurally different):
 {recent_hooks}
-- Tone: natural, curious, slightly dramatic, NOT robotic, NOT clickbait-fake. It must sound like a real person genuinely amazed by this, not an AI reading a Wikipedia summary.
+- Tone: natural, curious, dramatic and energetic — like a real person who is genuinely shocked and can't wait to tell you. Build tension before the payoff, add a vivid comparison or a 'wait, it gets weirder' beat in the middle. NOT robotic, NOT a flat list of facts, NOT boring.
 - End on a punchy closing line (not a question dump, not "subscribe for more").
 - Do not add any facts beyond what's provided — stay faithful to the source fact.
 - Write for the ear (spoken), not for the eye (no headers, no bullet points).
