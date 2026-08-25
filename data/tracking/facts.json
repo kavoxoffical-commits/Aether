@@ -11,7 +11,7 @@
     "verification_status": "verified",
     "script_status": "done",
     "audio_status": "done",
-    "visual_status": "pending",
+    "visual_status": "done",
     "render_status": "pending",
     "upload_status": "pending",
     "youtube_url": null,
@@ -20,6 +20,33 @@
     "hook": "Your local park pigeons aren't just begging for breadcrumbs—they might actually have a better grasp of fine art than you do.",
     "script": "Your local park pigeons aren't just begging for breadcrumbs—they might actually have a better grasp of fine art than you do. In a 1995 study, researchers put this to the test by training pigeons to distinguish between paintings by Claude Monet and Pablo Picasso. The results were mind-blowing. The birds didn't just randomly guess—they identified the correct artist with over ninety percent accuracy! But wait, it gets even weirder. When shown totally new Impressionist and Cubist paintings they had never seen before, the pigeons still correctly categorized the styles instantly. So while you're standing in a museum trying to look intellectual, just remember a literal pigeon already gets the joke.",
     "voice_used": "en-US-AndrewNeural",
-    "audio_path": "data/audio/fact_0001.mp3"
+    "audio_path": "data/audio/fact_0001.mp3",
+    "visual_beats": [
+      {
+        "query": "pigeons eating breadcrumbs",
+        "type": "video",
+        "path": "data/visuals/fact_0001/beat_0.mp4"
+      },
+      {
+        "query": "classic art paintings",
+        "type": "video",
+        "path": "data/visuals/fact_0001/beat_1.mp4"
+      },
+      {
+        "query": "pigeon close up",
+        "type": "video",
+        "path": "data/visuals/fact_0001/beat_2.mp4"
+      },
+      {
+        "query": "impressionist oil painting",
+        "type": "video",
+        "path": "data/visuals/fact_0001/beat_3.mp4"
+      },
+      {
+        "query": "person looking painting",
+        "type": "video",
+        "path": "data/visuals/fact_0001/beat_4.mp4"
+      }
+    ]
   }
 ]
