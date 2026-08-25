@@ -161,16 +161,14 @@ def render_video(fact: dict, out_path: Path):
     default_end = total_duration * 0.45
     curious_end = total_duration * 0.75
 
-    char_inputs_start = len(inputs) // 2 + 1  # placeholder, real index set by caller
-    filter_parts.append(
-        f"[{{default_idx}}:v]scale={CHARACTER_SIZE}:{CHARACTER_SIZE}[charA]"
-    )
-    filter_parts.append(
-        f"[{{curious_idx}}:v]scale={CHARACTER_SIZE}:{CHARACTER_SIZE}[charB]"
-    )
-    filter_parts.append(
-        f"[{{shocked_idx}}:v]scale={CHARACTER_SIZE}:{CHARACTER_SIZE}[charC]"
-    )
+    # Character images are appended as inputs right after the beat clips
+    # (before the audio input), so their indices are len(beats), len(beats)+1, len(beats)+2.
+    default_idx = len(beats)
+    curious_idx = len(beats) + 1
+    shocked_idx = len(beats) + 2
+    filter_parts.append(f"[{default_idx}:v]scale={CHARACTER_SIZE}:{CHARACTER_SIZE}[charA]")
+    filter_parts.append(f"[{curious_idx}:v]scale={CHARACTER_SIZE}:{CHARACTER_SIZE}[charB]")
+    filter_parts.append(f"[{shocked_idx}:v]scale={CHARACTER_SIZE}:{CHARACTER_SIZE}[charC]")
     filter_parts.append(
         f"[vsubbed][charA]overlay={char_x}:{char_y}:enable='between(t,0,{default_end:.3f})'[vc1]"
     )
@@ -184,7 +182,12 @@ def render_video(fact: dict, out_path: Path):
     # --- SFX (synthesized, zero-cost): a rising "whoosh" right on the hook,
     # and a soft "pop" on every beat transition after that. Mixed under the
     # voice at low volume — no background music, per project rule.
-    audio_input_index = len(beats)
+    inputs += [
+        "-i", str(CHARACTER_DIR / "bubble_default.png"),
+        "-i", str(CHARACTER_DIR / "bubble_curious.png"),
+        "-i", str(CHARACTER_DIR / "bubble_shocked.png"),
+    ]
+    audio_input_index = len(beats) + 3
     inputs += ["-i", str(audio_path)]
 
     sfx_parts = []
