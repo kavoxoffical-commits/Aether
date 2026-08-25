@@ -101,6 +101,8 @@ def pexels_search(query: str, kind: str):
     url = f"https://api.pexels.com/{path}?query={urllib.parse.quote(query)}&per_page=3&orientation=portrait"
     req = urllib.request.Request(url)
     req.add_header("Authorization", api_key)
+    req.add_header("User-Agent", "Mozilla/5.0 (compatible; AetherBot/1.0)")
+    req.add_header("Accept", "application/json")
     with urllib.request.urlopen(req, timeout=30) as resp:
         return json.loads(resp.read().decode("utf-8"))
 
