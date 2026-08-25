@@ -148,7 +148,37 @@ def render_video(fact: dict, out_path: Path):
         f"[vconcat]subtitles='{srt_escaped}':force_style="
         f"'FontName=Arial Black,FontSize=64,Bold=1,PrimaryColour=&H00FFFFFF,"
         f"OutlineColour=&H00000000,Outline=3,BorderStyle=3,BackColour=&H99000000,"
-        f"Alignment=2,MarginV=260'[vout]"
+        f"Alignment=2,MarginV=260'[vsubbed]"
+    )
+
+    # --- Channel mascot bubble (top-right corner, whole video) ---
+    # Expression timeline: default (skeptical/idle) for the first ~45%,
+    # curious for the next ~30% (escalation), shocked for the final ~25%
+    # (reveal/twist) — until the script module tags beats with story roles
+    # explicitly, this proportional split approximates it.
+    char_x = TARGET_W - CHARACTER_SIZE - CHARACTER_MARGIN
+    char_y = CHARACTER_MARGIN
+    default_end = total_duration * 0.45
+    curious_end = total_duration * 0.75
+
+    char_inputs_start = len(inputs) // 2 + 1  # placeholder, real index set by caller
+    filter_parts.append(
+        f"[{{default_idx}}:v]scale={CHARACTER_SIZE}:{CHARACTER_SIZE}[charA]"
+    )
+    filter_parts.append(
+        f"[{{curious_idx}}:v]scale={CHARACTER_SIZE}:{CHARACTER_SIZE}[charB]"
+    )
+    filter_parts.append(
+        f"[{{shocked_idx}}:v]scale={CHARACTER_SIZE}:{CHARACTER_SIZE}[charC]"
+    )
+    filter_parts.append(
+        f"[vsubbed][charA]overlay={char_x}:{char_y}:enable='between(t,0,{default_end:.3f})'[vc1]"
+    )
+    filter_parts.append(
+        f"[vc1][charB]overlay={char_x}:{char_y}:enable='between(t,{default_end:.3f},{curious_end:.3f})'[vc2]"
+    )
+    filter_parts.append(
+        f"[vc2][charC]overlay={char_x}:{char_y}:enable='between(t,{curious_end:.3f},{total_duration:.3f})'[vout]"
     )
 
     # --- SFX (synthesized, zero-cost): a rising "whoosh" right on the hook,
