@@ -1,0 +1,35 @@
+name: Fetch Visuals
+
+on:
+  workflow_dispatch: {}
+  workflow_run:
+    workflows: ["Generate Voice"]
+    types: [completed]
+
+permissions:
+  contents: write
+
+jobs:
+  fetch-visuals:
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Run visuals module
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
+        run: python src/visuals/fetch_visuals.py
+
+      - name: Commit assets + updated tracking file
+        run: |
+          git config user.name "aether-bot"
+          git config user.email "aether-bot@users.noreply.github.com"
+          git add data/tracking/facts.json data/visuals/
+          git diff --cached --quiet || git commit -m "Add visual assets for pending fact"
+          git push
