@@ -4,19 +4,23 @@ Render module.
 Takes the oldest fact with visual_status == "done" and render_status ==
 "pending", and combines:
 - the voiceover audio
-- the visual beat clips (scaled/cropped to 9:16)
-- burned-in captions (synced to the audio duration, split by word count)
+- the visual beat clips (scaled/cropped to 9:16, with a subtle Ken Burns
+  zoom so nothing looks like a static slideshow)
+- a hook "whoosh" + soft "pop" transitions between beats (synthesized with
+  ffmpeg itself — zero cost, zero extra assets)
+- burned-in captions: bold, bottom-third, semi-transparent background box
+  (readable on any background, not floating in the middle of the frame)
 
-into one final vertical (1080x1920) MP4 using ffmpeg (pre-installed on
-GitHub Actions runners — no paid service, no extra install needed).
+into one final vertical (1080x1920) MP4 using ffmpeg.
 
 Project rules honored here:
-- No background music — voice + SFX-free for now (SFX pass can be layered
-  in later without changing this module's contract).
-- 9:16 vertical, no single static image for the whole video.
-- Captions are large, clear, phone-friendly, synced to the audio.
+- No background music — SFX only (short whoosh/pop), per the project brief.
+- 9:16 vertical, no single static image for the whole video, motion on
+  every beat.
+- Captions are large, clear, phone-friendly, synced to the audio, sit low
+  on the frame (not centered) with a readable background box.
 
-Requires: ffmpeg + ffprobe on PATH (present by default on ubuntu-latest).
+Requires: ffmpeg + ffprobe on PATH.
 
 Output: data/render/<fact_id>.mp4
 """
@@ -31,7 +35,8 @@ TRACKING_FILE = ROOT / "data" / "tracking" / "facts.json"
 RENDER_DIR = ROOT / "data" / "render"
 
 TARGET_W, TARGET_H = 1080, 1920
-WORDS_PER_CAPTION_CHUNK = 5
+WORDS_PER_CAPTION_CHUNK = 4
+ZOOM_FPS = 30
 
 
 def load_tracking():
@@ -91,44 +96,91 @@ def render_video(fact: dict, out_path: Path):
 
     inputs = []
     filter_parts = []
+    n_frames = int(per_beat_duration * ZOOM_FPS)
+
     for i, beat in enumerate(beats):
         clip_path = ROOT / beat["path"]
         inputs += ["-i", str(clip_path)]
+
+        # Ken Burns: slow zoom-in over the beat's duration so nothing sits
+        # frozen. Oversized scale first so the zoompan crop has room to move.
+        base = (
+            f"[{i}:v]scale={TARGET_W * 2}:{TARGET_H * 2}:force_original_aspect_ratio=increase,"
+            f"crop={TARGET_W * 2}:{TARGET_H * 2}"
+        )
         if beat["type"] == "video":
-            filter_parts.append(
-                f"[{i}:v]scale={TARGET_W}:{TARGET_H}:force_original_aspect_ratio=increase,"
-                f"crop={TARGET_W}:{TARGET_H},trim=duration={per_beat_duration:.3f},"
-                f"setpts=PTS-STARTPTS,fps=30[v{i}]"
-            )
+            base += f",trim=duration={per_beat_duration:.3f},setpts=PTS-STARTPTS,fps={ZOOM_FPS}"
         else:
-            # static photo: loop it for the beat's duration
-            filter_parts.append(
-                f"[{i}:v]scale={TARGET_W}:{TARGET_H}:force_original_aspect_ratio=increase,"
-                f"crop={TARGET_W}:{TARGET_H},loop=loop=-1:size=1,"
-                f"trim=duration={per_beat_duration:.3f},setpts=PTS-STARTPTS,fps=30[v{i}]"
-            )
+            base += f",loop=loop=-1:size=1,trim=duration={per_beat_duration:.3f},setpts=PTS-STARTPTS,fps={ZOOM_FPS}"
+
+        zoom = (
+            f",zoompan=z='min(zoom+0.0012,1.15)':d={max(n_frames,1)}:"
+            f"x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':s={TARGET_W}x{TARGET_H}:fps={ZOOM_FPS}"
+        )
+        filter_parts.append(f"{base}{zoom}[v{i}]")
 
     concat_inputs = "".join(f"[v{i}]" for i in range(len(beats)))
-    filter_parts.append(f"{concat_inputs}concat=n={len(beats)}:v=1:a=0[vconcat]")
+    filter_parts.append(f"{concat_inputs}concat=n={len(beats)}:v=1:a=0[vraw]")
 
-    # Burn in captions (subtitles filter needs a POSIX-escaped path)
+    # Slight contrast/saturation lift + quick fade-in for a more "produced" look.
+    filter_parts.append(
+        "[vraw]eq=contrast=1.06:saturation=1.15,fade=t=in:st=0:d=0.25[vconcat]"
+    )
+
     srt_escaped = str(srt_path).replace("\\", "/").replace(":", "\\:")
     filter_parts.append(
         f"[vconcat]subtitles='{srt_escaped}':force_style="
-        f"'FontName=Arial,FontSize=20,PrimaryColour=&H00FFFFFF,"
-        f"OutlineColour=&H00000000,BorderStyle=1,Outline=2,Alignment=2,MarginV=120'[vout]"
+        f"'FontName=Arial Black,FontSize=64,Bold=1,PrimaryColour=&H00FFFFFF,"
+        f"OutlineColour=&H00000000,Outline=3,BorderStyle=3,BackColour=&H99000000,"
+        f"Alignment=2,MarginV=260'[vout]"
     )
 
-    filter_complex = ";".join(filter_parts)
-
+    # --- SFX (synthesized, zero-cost): a rising "whoosh" right on the hook,
+    # and a soft "pop" on every beat transition after that. Mixed under the
+    # voice at low volume — no background music, per project rule.
     audio_input_index = len(beats)
+    inputs += ["-i", str(audio_path)]
+
+    sfx_parts = []
+    sfx_labels = []
+
+    # Hook whoosh: quick rising tone, 0.35s, fades out.
+    sfx_parts.append(
+        "aevalsrc=0.35*sin(2*PI*(500+2200*t/0.35)*t):d=0.35:s=44100,"
+        "afade=t=out:st=0.2:d=0.15,volume=0.55[whoosh]"
+    )
+    sfx_labels.append(("[whoosh]", 0.0))
+
+    # Soft pop at each beat transition (skip t=0, already covered by whoosh).
+    t_cursor = per_beat_duration
+    for i in range(1, len(beats)):
+        label = f"[pop{i}]"
+        sfx_parts.append(
+            f"anoisesrc=d=0.08:c=pink:a=0.4,afade=t=out:st=0.02:d=0.06,volume=0.35{label}"
+        )
+        sfx_labels.append((label, t_cursor))
+        t_cursor += per_beat_duration
+
+    delayed_labels = []
+    for idx, (label, t) in enumerate(sfx_labels):
+        delay_ms = int(t * 1000)
+        out_label = f"[sfxd{idx}]"
+        sfx_parts.append(f"{label}adelay={delay_ms}|{delay_ms}{out_label}")
+        delayed_labels.append(out_label)
+
+    mix_inputs = "".join(delayed_labels) + f"[{audio_input_index}:a]"
+    sfx_parts.append(
+        f"{mix_inputs}amix=inputs={len(delayed_labels) + 1}:duration=longest:normalize=0[aout]"
+    )
+
+    filter_complex = ";".join(filter_parts + sfx_parts)
+
     cmd = [
         "ffmpeg", "-y",
         *inputs,
-        "-i", str(audio_path),
         "-filter_complex", filter_complex,
         "-map", "[vout]",
-        "-map", f"{audio_input_index}:a",
+        "-map", "[aout]",
         "-c:v", "libx264", "-preset", "veryfast", "-crf", "20",
         "-c:a", "aac", "-b:a", "160k",
         "-shortest",
