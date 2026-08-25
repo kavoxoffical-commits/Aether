@@ -2,6 +2,9 @@ name: Research Fact
 
 on:
   workflow_dispatch: {}
+
+permissions:
+  contents: write
   # Scheduled runs will be added once the full pipeline (script/voice/visuals/render/upload)
   # is built and tested end-to-end — no point discovering facts faster than we can use them.
 
