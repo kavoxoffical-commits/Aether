@@ -97,8 +97,8 @@ def call_gemini(prompt: str) -> str:
 def pexels_search(query: str, kind: str):
     """kind: 'videos' or 'photos'"""
     api_key = os.environ["PEXELS_API_KEY"]
-    endpoint = "videos/search" if kind == "videos" else "search"
-    url = f"https://api.pexels.com/{'videos/' if kind == 'videos' else ''}search?query={urllib.parse.quote(query)}&per_page=3&orientation=portrait"
+    path = "videos/search" if kind == "videos" else "v1/search"
+    url = f"https://api.pexels.com/{path}?query={urllib.parse.quote(query)}&per_page=3&orientation=portrait"
     req = urllib.request.Request(url)
     req.add_header("Authorization", api_key)
     with urllib.request.urlopen(req, timeout=30) as resp:
