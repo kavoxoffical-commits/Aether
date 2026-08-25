@@ -34,7 +34,7 @@ VOICE_POOL = [
 ]
 
 # Slightly brisk, energetic pace fits a Shorts hook-driven script.
-RATE = "+8%"
+RATE = "+2%"  # slower, more natural dramatic pacing (was too rushed at +8%)
 
 
 def load_tracking():
