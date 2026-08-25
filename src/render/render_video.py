@@ -33,6 +33,13 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 TRACKING_FILE = ROOT / "data" / "tracking" / "facts.json"
 RENDER_DIR = ROOT / "data" / "render"
+CHARACTER_DIR = ROOT / "assets" / "character"
+
+# Channel mascot: a small reaction bubble that sits in a corner the whole
+# video and switches expression at key story moments (default/curious
+# through most of it, shocked near the reveal/twist).
+CHARACTER_SIZE = 230
+CHARACTER_MARGIN = 36
 
 TARGET_W, TARGET_H = 1080, 1920
 WORDS_PER_CAPTION_CHUNK = 4
