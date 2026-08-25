@@ -182,11 +182,10 @@ def render_video(fact: dict, out_path: Path):
     # --- SFX (synthesized, zero-cost): a rising "whoosh" right on the hook,
     # and a soft "pop" on every beat transition after that. Mixed under the
     # voice at low volume — no background music, per project rule.
-    inputs += [
-        "-i", str(CHARACTER_DIR / "bubble_default.png"),
-        "-i", str(CHARACTER_DIR / "bubble_curious.png"),
-        "-i", str(CHARACTER_DIR / "bubble_shocked.png"),
-    ]
+    for name in ("bubble_default.png", "bubble_curious.png", "bubble_shocked.png"):
+        # -loop 1 so each static image is treated as a continuous stream
+        # (otherwise overlay only gets a single frame to work with).
+        inputs += ["-loop", "1", "-i", str(CHARACTER_DIR / name)]
     audio_input_index = len(beats) + 3
     inputs += ["-i", str(audio_path)]
 
