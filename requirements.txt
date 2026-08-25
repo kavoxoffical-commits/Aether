@@ -1,2 +1,1 @@
-# No external dependencies for the research module (uses stdlib urllib).
-# Dependencies will be added here as later pipeline stages (voice, visuals, render) are built.
+edge-tts>=6.1.0
