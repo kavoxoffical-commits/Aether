@@ -122,6 +122,7 @@ def best_video_url(video_obj):
 
 def download(url: str, dest: Path):
     req = urllib.request.Request(url)
+    req.add_header("User-Agent", "Mozilla/5.0 (compatible; AetherBot/1.0)")
     with urllib.request.urlopen(req, timeout=60) as resp:
         dest.write_bytes(resp.read())
 
