@@ -1,1 +1,21 @@
-[]
+[
+  {
+    "id": "fact_0001",
+    "topic": "Pigeon Art Critics",
+    "category": "Weird Facts",
+    "fact": "Pigeons are surprisingly sophisticated art critics. In a 1995 study, researchers successfully trained pigeons to tell the difference between paintings by Claude Monet and Pablo Picasso with over 90% accuracy. The birds could even correctly categorize Impressionist and Cubist styles they had never seen before.",
+    "sources": [
+      "Journal of the Experimental Analysis of Behavior (Watanabe, Sakamoto, & Wakita, 1995)",
+      "Smithsonian Magazine"
+    ],
+    "verification_status": "verified",
+    "script_status": "pending",
+    "audio_status": "pending",
+    "visual_status": "pending",
+    "render_status": "pending",
+    "upload_status": "pending",
+    "youtube_url": null,
+    "published_date": null,
+    "created_at": "2026-08-25T11:50:50.896077+00:00"
+  }
+]
