@@ -9,13 +9,15 @@
       "Smithsonian Magazine"
     ],
     "verification_status": "verified",
-    "script_status": "pending",
+    "script_status": "done",
     "audio_status": "pending",
     "visual_status": "pending",
     "render_status": "pending",
     "upload_status": "pending",
     "youtube_url": null,
     "published_date": null,
-    "created_at": "2026-08-25T11:50:50.896077+00:00"
+    "created_at": "2026-08-25T11:50:50.896077+00:00",
+    "hook": "Your local park pigeons aren't just begging for breadcrumbs—they might actually have a better grasp of fine art than you do.",
+    "script": "Your local park pigeons aren't just begging for breadcrumbs—they might actually have a better grasp of fine art than you do. In a 1995 study, researchers put this to the test by training pigeons to distinguish between paintings by Claude Monet and Pablo Picasso. The results were mind-blowing. The birds didn't just randomly guess—they identified the correct artist with over ninety percent accuracy! But wait, it gets even weirder. When shown totally new Impressionist and Cubist paintings they had never seen before, the pigeons still correctly categorized the styles instantly. So while you're standing in a museum trying to look intellectual, just remember a literal pigeon already gets the joke."
   }
 ]
