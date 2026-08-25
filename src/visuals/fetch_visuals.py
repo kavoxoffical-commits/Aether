@@ -132,7 +132,7 @@ def fetch_visual_for_beat(query: str, out_dir: Path, index: int) -> dict | None:
         video_results = pexels_search(query, "videos")
         videos = video_results.get("videos", [])
     except urllib.error.HTTPError as e:
-        print(f"Pexels video search error for '{query}': {e.code}", file=sys.stderr)
+        print(f"Pexels video search error for '{query}': {e.code} {e.read().decode()[:200]}", file=sys.stderr)
         videos = []
 
     if videos:
@@ -147,7 +147,7 @@ def fetch_visual_for_beat(query: str, out_dir: Path, index: int) -> dict | None:
         photo_results = pexels_search(query, "photos")
         photos = photo_results.get("photos", [])
     except urllib.error.HTTPError as e:
-        print(f"Pexels photo search error for '{query}': {e.code}", file=sys.stderr)
+        print(f"Pexels photo search error for '{query}': {e.code} {e.read().decode()[:200]}", file=sys.stderr)
         photos = []
 
     if photos:
