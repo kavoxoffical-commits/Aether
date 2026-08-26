@@ -183,9 +183,10 @@ def render_video(fact: dict, out_path: Path):
     # and a soft "pop" on every beat transition after that. Mixed under the
     # voice at low volume — no background music, per project rule.
     for name in ("bubble_default.png", "bubble_curious.png", "bubble_shocked.png"):
-        # -loop 1 so each static image is treated as a continuous stream
-        # (otherwise overlay only gets a single frame to work with).
-        inputs += ["-loop", "1", "-i", str(CHARACTER_DIR / name)]
+        # -loop 1 with an explicit -t bounds the stream to the exact video
+        # duration instead of looping forever (an unbounded looped input was
+        # causing the encoder to hang instead of stopping at -shortest).
+        inputs += ["-loop", "1", "-t", f"{total_duration:.3f}", "-i", str(CHARACTER_DIR / name)]
     audio_input_index = len(beats) + 3
     inputs += ["-i", str(audio_path)]
 
