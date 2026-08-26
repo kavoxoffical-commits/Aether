@@ -1,0 +1,21 @@
+name: 6. Prepare Upload
+on:
+  workflow_dispatch: {}
+permissions:
+  contents: write
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Prepare for upload
+        run: python src/upload.py
+      - name: Commit
+        run: |
+          git config user.name "paradise-bot"
+          git config user.email "bot@paradise"
+          git add data/tracking.json
+          git diff --cached --quiet || (git commit -m "Prepared video for upload" && git push)
