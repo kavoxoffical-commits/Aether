@@ -1,23 +1,34 @@
-# Aether — Weird Facts Shorts Automation
+# Paradise
 
-نظام شبه آلي لإنتاج ونشر Weird Facts Shorts على YouTube.
+**AI-Generated Dreamscapes | Ambient Worlds**
 
-## البنية
-- `src/research/` — اكتشاف والتحقق من الحقائق (Research + Verification)
-- `src/script/` — كتابة الـ Hook والسكربت
-- `src/voice/` — توليد الـ Voiceover
-- `src/visuals/` — تجهيز الصور/الفيديوهات
-- `src/render/` — دمج الفيديو النهائي
-- `src/upload/` — رفع ونشر على YouTube
-- `src/storage/` — إدارة الملفات (Drive/محلي مبدئيًا)
-- `data/facts/` — الحقائق المكتشفة (raw + verified)
-- `data/tracking/` — قاعدة بيانات التتبع (facts.json, videos.json)
+Explore impossible places. Beautiful, surreal, endless.
 
-## القاعدة الأساسية
-- ممنوع الموسيقى الخلفية — SFX فقط عند الحاجة
-- لا اختلاق حقائق — كل Fact لازم يمر بـ Research → Verification
-- منع التكرار عبر data/tracking/facts.json
-- الفيديو ما يظهر أبدًا كأنه AI (تنويع Hooks، أصوات، انتقالات)
+## About
 
-## الحالة الحالية
-مرحلة البناء الأولى: Research + Verification module.
+Paradise is an automated generator for AI dreamscapes — surreal, ambient environments paired with matching soundscapes. Each video is a unique place that doesn't exist, with subtle motion and immersive audio.
+
+- 🎨 AI-generated impossible worlds
+- 🎵 Ambient soundscapes (wind, rain, thunder, etc.)
+- 🚀 Fully automated pipeline
+- 📱 Optimized for YouTube Shorts
+
+## Technology
+
+- **Images:** Gemini (AI image generation)
+- **Motion:** FFmpeg
+- **Audio:** Freesound API (open-source sounds)
+- **Automation:** GitHub Actions
+
+## Pipeline
+
+1. Generate prompt for dreamscape
+2. Create AI image via Gemini
+3. Add subtle motion effects
+4. Select + mix ambient sounds
+5. Render final video
+6. Post to YouTube Shorts
+
+---
+
+*Built with free, open-source tools. Zero paid services.*
