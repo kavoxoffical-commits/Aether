@@ -1,0 +1,23 @@
+name: 5. Render Final
+on:
+  workflow_dispatch: {}
+permissions:
+  contents: write
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install ffmpeg
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
+      - name: Render final video
+        run: python src/render_final.py
+      - name: Commit
+        run: |
+          git config user.name "paradise-bot"
+          git config user.email "bot@paradise"
+          git add data/tracking.json data/render/final/
+          git diff --cached --quiet || (git commit -m "Rendered final" && git push)
