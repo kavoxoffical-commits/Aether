@@ -1,0 +1,45 @@
+name: Full: Generate Complete Dreamscape
+on:
+  workflow_dispatch: {}
+  schedule:
+    - cron: "0 9 * * *"
+permissions:
+  contents: write
+jobs:
+  full-pipeline:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      
+      - name: 1. Generate Prompt
+        run: python src/generate_prompt.py
+      
+      - name: 2. Generate Image
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: python src/generate_image.py
+      
+      - name: 3. Install ffmpeg
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
+      
+      - name: 3. Add Motion
+        run: python src/add_motion.py
+      
+      - name: 4. Select Audio
+        run: python src/select_audio.py
+      
+      - name: 5. Render Final
+        run: python src/render_final.py
+      
+      - name: 6. Prepare Upload
+        run: python src/upload.py
+      
+      - name: Commit all changes
+        run: |
+          git config user.name "paradise-bot"
+          git config user.email "bot@paradise"
+          git add data/
+          git diff --cached --quiet || (git commit -m "Completed dreamscape: full pipeline" && git push)
