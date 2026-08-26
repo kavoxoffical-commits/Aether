@@ -1,4 +1,4 @@
-name: Full: Generate Complete Dreamscape
+name: Full Pipeline
 on:
   workflow_dispatch: {}
   schedule:
@@ -34,12 +34,9 @@ jobs:
       - name: 5. Render Final
         run: python src/render_final.py
       
-      - name: 6. Prepare Upload
-        run: python src/upload.py
-      
       - name: Commit all changes
         run: |
           git config user.name "paradise-bot"
           git config user.email "bot@paradise"
           git add data/
-          git diff --cached --quiet || (git commit -m "Completed dreamscape: full pipeline" && git push)
+          git diff --cached --quiet || (git commit -m "Completed dreamscape" && git push)
