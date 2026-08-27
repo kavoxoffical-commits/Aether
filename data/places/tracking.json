@@ -1,0 +1,9 @@
+[
+  {
+    "id": "place_0001",
+    "name": "Mount Everest",
+    "country": "Nepal",
+    "status": "ready",
+    "path": "data/places/place_0001.mp4"
+  }
+]
