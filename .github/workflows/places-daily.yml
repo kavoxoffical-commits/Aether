@@ -1,0 +1,54 @@
+name: Daily Places Upload
+
+on:
+  schedule:
+    - cron: '0 9 * * *'  # 9 AM UTC daily
+  workflow_dispatch:
+
+jobs:
+  generate-and-upload:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pillow
+        sudo apt-get update && sudo apt-get install -y ffmpeg
+    
+    - name: Step 1 - Select Location
+      run: |
+        python src/1_select_location.py
+    
+    - name: Step 2 - Fetch Videos
+      env:
+        PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
+        MIXKIT_API_KEY: ${{ secrets.MIXKIT_API_KEY }}
+      run: |
+        python src/2_fetch_videos.py
+    
+    - name: Step 3 - Merge & Filter
+      run: |
+        python src/3_merge_and_filter.py
+    
+    - name: Step 4 - Upload to YouTube
+      env:
+        YOUTUBE_CREDENTIALS: ${{ secrets.YOUTUBE_CREDENTIALS }}
+      run: |
+        echo $YOUTUBE_CREDENTIALS > ~/.places_youtube_creds.json
+        python src/4_youtube_upload.py
+    
+    - name: Commit changes
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add data/tracking.json
+        git commit -m "Places: Daily upload" || true
+        git push
